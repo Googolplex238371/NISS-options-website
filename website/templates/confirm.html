@@ -1,0 +1,64 @@
+{% extends "base.html" %} {% block title %}Verify your account{% endblock %} 
+{% block content%}
+{%if not user.is_authenticated%}
+<style>
+  .close {
+    position: absolute;
+    right: 25px;
+    top: 0;
+    color: #000;
+    font-size: 35px;
+    font-weight: bold;
+  }
+  .close:hover,
+  .close:focus {
+    color: red;
+    cursor: pointer;
+  }
+</style>
+<div class = "modal" id = "modal" style = "display:none">
+  <div class = "modal-content animate">
+    <div class = "modal-header">
+      <span class = "close">&times;</span>
+      <h3>Didn't get the registration email?</h3>
+    </div>
+    <div class = "modal-body">
+      <p>Please try the following:</p>
+      <ul>
+        <li>Wait 2-3 minutes, then refresh your email</li>
+        <li>Check your spam/junk folder</li>
+        <li>Check your internet connection</li>
+      </ul>
+      <p>If you still cannot see the email, please click <a href = "/resend">here</a> to resend the email</p>
+    </div>
+  </div>
+</div>
+<h4>Enter the OTP sent to your email (check your spam folder).</h4>
+<form method = "POST">
+  <div class="form-group">
+    <input
+      class="form-control"
+      id="otp"
+      name="otp"
+      placeholder="Enter the OTP sent to your email"
+      required
+    />
+  </div>
+  <button type="submit" class="btn btn-primary" style = "background-color:black;border:none">Verify account</button>
+</form>
+<button id = "modal-button" class="btn btn-primary" style = "background-color:black;border:none"><i class="fa fa-question-circle"></i> Didn't get registration email?</button>
+<script>
+  window.onload = function(){
+    const modal = document.getElementById("modal"); // Gets the modal
+    const btn = document.getElementById("modal-button"); // Gets the button that opens the modal
+    const span = document.querySelector(".close"); //
+    btn.onclick = function(){modal.style.display = "block",modal.style.animation = "animatezoom"} // Opens the modal when the user clicks on the button
+    span.onclick = () => modal.style.display = "none"; // Closes the modal when the user clicks on the x button
+  }
+</script>
+{%else%}
+<script>
+  location.href = "/" // Redirects to the home page if the user is already logged in
+</script>
+{%endif%}
+{%endblock%}

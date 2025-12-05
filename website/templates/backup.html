@@ -1,0 +1,24 @@
+{%extends 'base.html'%}
+{%block title%}Backup Database{%endblock%}
+{%block content%}
+<form method = "POST">
+  <button  class = "btn btn-primary" style = "background-color:black;border:none">Backup Database</button>
+  <p id = "time"></p>
+  <p id = "db"></p>
+  <p id = "indicator"></p>
+</form>
+<script>
+  time = new Date({{last_edited}}*1000) // Gets time
+  document.getElementById("time").innerHTML = "Last backed up: "+time.toLocaleString() // Displays time
+  document.getElementById("db").innerHTML = "Last Database modification: "+new Date({{last_db_edit}}*1000).toLocaleString() // Displays time of last database modification
+  console.log(JSON.stringify({{data | safe}})) // Logs data
+  if({{last_edited}}>{{last_db_edit}}){ // Checks if the database has been modified since the last backup
+    document.getElementById("indicator").innerHTML = "Database is up to date" // Displays message
+    document.getElementById("indicator").style.color = "green" // Sets color of message
+  }
+  else{
+    document.getElementById("indicator").innerHTML = "Database is not up to date" // Displays message
+    document.getElementById("indicator").style.color = "red" // Sets color of message
+  }
+</script>
+{%endblock%}

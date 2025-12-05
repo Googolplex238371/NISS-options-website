@@ -1,0 +1,724 @@
+{%extends 'base.html'%}
+{%block title%}Home{%endblock%}
+{%block content%}
+<style>
+  .modal {
+    display: none;
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+  }
+  .modal-content {
+    background-color: #fefefe;
+    margin: 5px auto;
+    border: 1px solid #888;
+    width: 80%; 
+  }
+  .close {
+    position: absolute;
+    right: 25px;
+    top: 0;
+    color: #000;
+    font-size: 35px;
+    font-weight: bold;
+  }
+  .close:hover,
+  .close:focus {
+    color: red;
+    cursor: pointer;
+  }
+  .animate {
+    -webkit-animation: animatezoom 0.6s;
+    animation: animatezoom 0.6s
+  }
+  @-webkit-keyframes animatezoom {
+    from {-webkit-transform: scale(0)}
+    to {-webkit-transform: scale(1)}
+  }
+  @keyframes animatezoom {
+    from {transform: scale(0)}
+    to {transform: scale(1)}
+  }
+  #sort-name{
+    rotate: 180deg;
+  }
+  #sort-year{
+    rotate: 180deg; 
+  }
+  /* Rotates sort buttons by 180 degrees to fit with sort logic */
+  .pagination p {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+  }
+
+  .pagination p.active {
+    background-color: dodgerblue;
+    color: white;
+  }
+
+  .pagination p:hover:not(.active) {background-color: #ddd;}
+</style>
+<div id = "ib">
+<div class="modal" id = "modal-filters" style = "display:none">
+  <div class="modal-content animate" id = "filters-modal">
+    <div class="modal-header">
+      <h4 class="modal-title">Filters</h4>
+      <span onclick= "document.getElementById('modal-filters').style.display='none'" class="close" title="Close Modal">&times;</span>
+    </div>
+    <div class="modal-body" id = "filters-body">
+      <div id = "filter-messages"></div>
+      <h6>Select Filters:</h6>
+      <form oninput = "document.getElementById('apply-filter').hidden=false">
+      <div>
+          <input id="year-toggle" onclick = "toggleFilter('year')" type = "checkbox">
+          <label for="year-toggle"> Year Group</label>
+          <div class = "container" id = "year-filter-container" style = "display:none">
+            <input placeholder = "Year Group" id = "year-filter" />
+          </div>
+      </div>
+      <div>
+          <input id = "group1-toggle" onclick = "toggleFilter('group1')" type = "checkbox">
+          <label for="group1-toggle">Language A</label>
+          <div class = "container" id = "group1-filter-container" style = "display:none">
+            <input placeholder = "Language A" id = "group1-filter" />
+          </div>
+      </div>
+      <div>
+          <input id = "group2-toggle" onclick = "toggleFilter('group2')" type = "checkbox">
+          <label for="group2-toggle">Language Acquisition</label>
+          <div class = "container" id = "group2-filter-container" style = "display:none">
+            <input placeholder = "Language Acquisition" id = "group2-filter" />
+          </div>
+      </div>
+      <div>
+          <input id = "group3-toggle" onclick = "toggleFilter('group3')" type = "checkbox">
+          <label for="group3-toggle">Individuals and Societies</label>
+          <div class = "container" id = "group3-filter-container" style = "display:none">
+            <input placeholder = "Individuals and Societies" id = "group3-filter" />
+          </div>
+      </div>
+      <div>
+          <input id = "group4-toggle" onclick = "toggleFilter('group4')" type = "checkbox">
+          <label for="group4-toggle">Sciences</label>
+          <div class = "container" id = "group4-filter-container" style = "display:none">
+            <input placeholder = "Sciences" id = "group4-filter" />
+          </div>
+      </div>
+      <div>
+          <input id = "group5-toggle" onclick = "toggleFilter('group5')" type = "checkbox">
+          <label for="group5-toggle">Mathematics</label>
+          <div class = "container" id = "group5-filter-container" style = "display:none">
+            <input placeholder = "Mathematics" id = "group5-filter" />
+          </div>
+      </div>
+      <div>
+          <input id = "group6-toggle" onclick = "toggleFilter('group6')" type = "checkbox">
+          <label for="group6-toggle">Sixth Subject Selected</label>
+          <div class = "container" id = "group6-filter-container" style = "display:none">
+            <input placeholder = "Group 6" id = "group6-filter" />
+          </div>
+      </div>
+      <div>
+          <input id="student-notes-toggle" onclick = "toggleFilter('student-notes')" type = "checkbox">
+          <label for="student-notes-toggle">Notes</label>
+          <div class = "container" id = "student-notes-filter-container" style = "display:none">
+            <input placeholder = "Notes" id = "student-notes-filter" />
+          </div>
+      </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" style = "background-color:black;border:none" onclick = "applyFilters()" id = "apply-filter" hidden>Apply Filters</button>
+    </div>
+  </div>
+</div>
+<div style="display:flex;justify-content:left;align-items: flex-start">
+  <input class = "form-control" placeholder = "Search for a student" id = "search" style = "width:200px" />
+  <button class = "btn btn-primary" onclick = "search()" style = "background-color:black;border:none"><i class="fa fa-search" style="color:white"></i></button>
+  <button class = "btn btn-primary" onclick = "document.getElementById('modal-filters').style.display='block'" style = "background-color:black;border:none"><i class = "fa fa-filter" style = "color:white"></i><span class="badge badge-light" style = "display:none" id = "number-filters"></span></button>
+  <button class = "btn btn-primary" onclick = "cancel_search()" style = "background-color:red;border:none"><i class="fa fa-close" style="color:white"></i></button>
+  <button class = "btn btn-primary" onclick = "exportTableToExcel('table')" style = "background-color:black;border:none;margin-left:40px"><i class="fa fa-download"></i> Excel</button>
+</div>
+<br>
+<table class = "table table-bordered" id = "table">
+  <thead>
+    <th>Name <i id = "sort-name" onclick = "sortColumn('name')" class = "fa fa-sort"></i></th>
+    <th>Email <i id = "email" onclick = "toggleColumn('email')" class="fa fa-eye"></i></th>
+    <th>Year Group <i id = "year" onclick = "toggleColumn('year')" class="fa fa-eye"></i><i id = "sort-year" onclick = "sortColumn('year')" class = "fa fa-sort"></i></th>
+    <th>Language A <i id = "group1" onclick = "toggleColumn('group1')" class="fa fa-eye"></i></th>
+    <th>Language Acquisition <i id = "group2" onclick = "toggleColumn('group2')" class="fa fa-eye"></i></th>
+    <th>Individuals and Societies <i id = "group3" onclick = "toggleColumn('group3')" class="fa fa-eye"></i></th>
+    <th>Sciences <i id = "group4" onclick = "toggleColumn('group4')" class="fa fa-eye"></i></th>
+    <th>Mathematics <i id = "group5" onclick = "toggleColumn('group5')" class="fa fa-eye"></i></th>
+    <th>Sixth Subject Selected <i id = "group6" onclick = "toggleColumn('group6')" class="fa fa-eye"></i></th>
+    <th>Date and Time (SGT) <i id = "datetime" onclick = "toggleColumn('datetime')" class="fa fa-eye"></i></th>
+    <th>Plans <i id = "plans" onclick = "toggleColumn('plans')" class="fa fa-eye"></i></th>
+    <th>Notes</th>
+  </thead>
+  {% set counter = namespace(value=0)%}
+  <tr id = "null-search-row" hidden = "true"><td colspan = "12">No students found</td></tr>
+  <tbody  id = "students">
+  {%for student in students%}
+    {%set idx = counter.value%}
+  <tr class = "student" id = "student-{{idx}}">
+    <td id = "name-{{idx}}"></td>
+    <td id = "email-{{idx}}">{{student.email}}</td>
+    <td id = "year-{{idx}}"></td>
+    <td id = "group1-{{idx}}"></td>
+    <td id = "group2-{{idx}}"></td>
+    <td id = "group3-{{idx}}"></td>
+    <td id = "group4-{{idx}}"></td>
+    <td id = "group5-{{idx}}"></td>
+    <td id = "group6-{{idx}}"></td>
+    <td id = "datetime-{{idx}}"></td>
+    <td id = "plans-{{idx}}">{{student.studying_ib}}</td>
+    <td id = "notes-{{idx}}"></td>
+  </tr>
+    <div class="modal" id = "modal-{{idx}}" style = "display:none">
+      <div class="modal-content animate" id = "notes-modal-{{idx}}">
+        <div class="modal-header">
+          <h4 class="modal-title" id = "modalname-{{idx}}">Notes for </h4>
+          <span onclick= "document.getElementById('modal-{{idx}}').style.display='none'" class="close" title="Close Modal">&times;</span>
+        </div>
+        <div class="modal-body" id = "notes-body-{{idx}}">
+          <div id = "notes-messages-{{idx}}"></div>
+          <i class = "fa fa-edit" id = "notes-icon-{{idx}}" onclick = "toggleNotesMode({{idx}})"></i>
+          <textarea style = "display:none" class="form-control" id="notes-text-{{idx}}" oninput = "displayNotes({{idx}})">{{student.notes}}</textarea>
+          <p id = "view-notes-{{idx}}" style = "display:block"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" style = "display:none" onclick = "update_notes({{idx}},'{{student.email}}')" id = "save-{{idx}}">Save</button>
+        </div>
+      </div>
+    </div>
+  <script>
+    document.getElementById("year-{{idx}}").innerHTML = {{student.year_group | safe}} // This sets the year group of the student.
+    document.getElementById("name-{{idx}}").innerHTML = "{{student.name}}" // This sets the name of the student.
+    if("{{ib_subjects[idx].group1}}" != ""){ // This checks if the student has selected options.
+      document.getElementById("group1-{{idx}}").innerHTML = "{{ib_subjects[idx].group1}}" // This sets the subject selected by the student in group 1
+      document.getElementById("group2-{{idx}}").innerHTML = "{{ib_subjects[idx].group2}}"  // This sets the subject selected by the student in group 2
+      document.getElementById("group3-{{idx}}").innerHTML = "{{ib_subjects[idx].group3}}" // This sets the subject selected by the student in group 3
+      document.getElementById("group4-{{idx}}").innerHTML = "{{ib_subjects[idx].group4}}" // This sets the subject selected by the student in group 4
+      document.getElementById("group5-{{idx}}").innerHTML = "{{ib_subjects[idx].group5}}" // This sets the subject selected by the student in group 5
+      document.getElementById("group6-{{idx}}").innerHTML = "{{ib_subjects[idx].group6}}" // This sets the subject selected by the student in group 6
+      button = document.createElement("button") // This creates a button element.
+      button.className = "btn btn-primary" // This sets the class of the button to "btn btn-primary".
+      button.style.backgroundColor = "black" // This sets the background color of the button.
+      button.style.border = "none" // This sets the style of the button.
+      button.innerHTML = "<i class = 'fa fa-file-text'></i>" // This sets the text to a doc icon.
+      document.getElementById("view-notes-{{idx}}").innerText = document.getElementById("notes-text-{{idx}}").value // This sets the notes of the student.
+      document.getElementById("notes-{{idx}}").appendChild(button) // This adds a button to the notes column of the table.
+      button.onclick = function(){document.getElementById("modal-{{idx}}").style.display = 'block'} // This sets the onclick function of the button to display the modal.
+      document.getElementById("modalname-{{idx}}").innerText = "Notes for "+"{{student.name}}" // This sets the name of the student in the modal.
+      document.getElementById("datetime-{{idx}}").innerHTML = "{{ib_subjects[idx].datetime}}" // This sets the date and time of the student's options.
+    }
+    else{ // This checks if the student has not selected options.
+      row = document.getElementById("student-{{idx}}") // This gets the row of the student.
+      row.parentNode.removeChild(row) // This removes the row of the student.
+    }
+    {%set counter.value = counter.value+1%} // This increments the counter.
+  </script>
+  {%endfor%}
+  </tbody>
+</table>
+<div class="pagination" id = "page-controls">
+  <p id = "previous" onclick = "paginateTable(2)" style = "display:none">&laquo;</p>
+  <div id = "pages">
+  </div>
+  <p id = "next" onclick = "paginateTable(-1)">&raquo;</p>
+</div>
+</div>
+<script>
+  var start = 1 // This is the starting index of the table.
+  var page_length = 50; // This is the number of rows per page.
+  var num_filters = 0; // This is the number of filters applied.
+  let year_groups,group1s,group2s,group3s,group4s,group5s,group6s,notes_filter; // These are the filters applied. 
+  let og_rows; // This is the original rows of the table.
+  let row_count; // This is the number of rows in the table.
+  let year_input,group1_input,group2_input,group3_input,group4_input,group5_input,group6_input,notes_filter_input; // These are the input boxes for the filters.
+  let checked = [false,false,false,false,false,false,false,false] // This is the list of filters that are checked.
+  let subject_groups = [["English A","Chinese A","School Supported Self Study in Mother Tongue"],["English B","French B","Spanish B","Chinese B","Spanish Ab Initio","French Ab Initio","Chinese Ab Initio"],["Business Management","Economics","Geography","Psychology","History"],["Biology","Chemistry","Computer Science","Environmental Systems and Sciences","Physics","Sports Science"],["Music","Theatre Arts","Visual Arts"]] // This is the list of subjects in each group.
+  document.addEventListener('DOMContentLoaded', function () { // This function is called when the page is loaded.
+    year_input = document.getElementById("year-filter") // This gets the year filter input box.
+    new Tagify(year_input, { // This creates a new Tagify object for the year filter input box.
+      whitelist: ["Year 7", "Year 8", "Year 9", "Year 10", "Year 11", "Year 12","Year 13"], // This sets the whitelist for the year filter input box.
+      dropdown: { // This sets the dropdown options for the year filter input box.
+        enabled: 1, // This enables the dropdown.
+        fuzzySearch: true, // This enables fuzzy search.
+        position: 'input', // This sets the position of the dropdown.
+        caseSensitive: false, // This sets the case sensitivity of the dropdown.
+      },
+      enforceWhitelist:true // This enforces the whitelist.
+    })
+    year_groups = ["Year 7", "Year 8", "Year 9", "Year 10", "Year 11", "Year 12","Year 13"] // This sets the year groups.
+    group1_input = document.getElementById("group1-filter") // This gets the group1 filter input box.
+    new Tagify(group1_input,{ // This creates a new Tagify object for the group1 filter input box.
+      whitelist: subject_groups[0].concat(["IB Courses"]), // This sets the whitelist for the group1 filter input box.
+      dropdown: { // This sets the dropdown options for the group1 filter input box.
+        enabled: 1, // This enables the dropdown.
+        fuzzySearch: true, // This enables fuzzy search.
+        position: 'input', // This sets the position of the dropdown.
+        caseSensitive: false, // This sets the case sensitivity of the dropdown.
+      }
+    })
+    group1s = subject_groups[0].concat(["IB Courses"]) // Allows us to keep track of the subjects in group 1
+    group2_input = document.getElementById("group2-filter") // This gets the group2 filter input box.
+    new Tagify(group2_input, { // This creates a new Tagify object for the group2 filter input box.
+      whitelist: subject_groups[1].concat(["IB Courses"]), // This sets the whitelist for the group2 filter input box.
+      dropdown: { // This sets the dropdown options for the group2 filter input box.
+        enabled: 1, // This enables the dropdown.
+        fuzzySearch: true, // This enables fuzzy search.
+        position: 'input', // This sets the position of the dropdown.
+        caseSensitive: false, // This sets the case sensitivity of the dropdown.
+      }
+    })
+    group2s = subject_groups[1].concat(["IB Courses"]) // Allows us to keep track of the subjects in group 2
+    group3_input = document.getElementById("group3-filter") // This gets the group3 filter input box.
+    new Tagify(group3_input, { // This creates a new Tagify object for the group3 filter input box.
+      whitelist: subject_groups[2].concat(["IB Courses"]), // This sets the whitelist for the group3 filter input box.
+      dropdown: { // This sets the dropdown options for the group3 filter input box.
+        enabled: 1, // This enables the dropdown.
+        fuzzySearch: true, // This enables fuzzy search.
+        position: 'input', // This sets the position of the dropdown.
+        caseSensitive: false, // This sets the case sensitivity of the dropdown.
+      }
+    })
+    group3s = subject_groups[2].concat(["IB Courses"]) // Allows us to keep track of the subjects in group 3
+    group4_input = document.getElementById("group4-filter") // This gets the group4 filter input box.
+    new Tagify(group4_input, { // This creates a new Tagify object for the group4 filter input box.
+      whitelist: subject_groups[3].concat(["IB Courses"]), // This sets the whitelist for the group4 filter input box.
+      dropdown: { // This sets the dropdown options for the group4 filter input box.
+        enabled: 1, // This enables the dropdown.
+        fuzzySearch: true, // This enables fuzzy search.
+        position: 'input', // This sets the position of the dropdown.
+        caseSensitive: false, // This sets the case sensitivity of the dropdown.
+      }
+    })
+    group4s = subject_groups[3].concat(["IB Courses"]) // Allows us to keep track of the subjects in group 4
+    group5_input = document.getElementById("group5-filter") // This gets the group5 filter input box.
+    new Tagify(group5_input, { // This creates a new Tagify object for the group5 filter input box.
+      whitelist: ["Analysis and Approaches","Applications and Interpretation","IB Courses"], // This sets the whitelist for the group5 filter input box.
+      dropdown: { // This sets the dropdown options for the group5 filter input box.
+        enabled: 1, // This enables the dropdown.
+        fuzzySearch: true, // This enables fuzzy search.
+        position: 'input', // This sets the position of the dropdown.
+        caseSensitive: false, // This sets the case sensitivity of the dropdown.
+      }
+    })
+    group5s = ["Analysis and Approaches","Applications and Interpretation","IB Courses"] // Allows us to keep track of the subjects in group 5
+    group6_input = document.getElementById("group6-filter") // This gets the group6 filter input box.
+    new Tagify(group6_input, { // This creates a new Tagify object for the group6 filter input box.
+      whitelist: ["Business Management","Economics","Psychology","Biology","Physics","Music","Theatre Arts","Visual Arts"], // This sets the whitelist for the group6 filter input box.
+      dropdown: { // This sets the dropdown options for the group6 filter input box.
+        enabled: 1, // This enables the dropdown.
+        fuzzySearch: true, // This enables fuzzy search.
+        position: 'input', // This sets the position of the dropdown.
+        caseSensitive: false, // This sets the case sensitivity of the dropdown.
+      }
+    })
+    group6s = subject_groups[2].concat(subject_groups[3]).concat(subject_groups[4]).concat(subject_groups[5]) // This sets the group6s to all the subjects that can be selected as the sixth subject.
+    notes_filter_input = document.getElementById("student-notes-filter") // This gets the notes filter input box.
+    new Tagify(notes_filter_input) // This creates a new Tagify object for the notes filter input box.
+    notes_filter = [] // This sets the notes filter to an empty array.
+  })
+  let tableHTML = "" // This is the HTML of the table.
+  window.onload = function(){ // This function is called when the page is loaded.
+    og_rows = Array.from(document.getElementById("students").children).slice() // Makes a copy of the original rows of the table.
+    row_count = Array.from(document.getElementById("students").querySelector("tr")).length
+    for(var i = 1; i <= Math.floor(row_count/page_length)+1; i++){ // This loops through each page of the table.
+      document.getElementById('pages').innerHTML += "<p id = 'pages-"+i.toString()+"'onclick = 'paginateTable("+((i-1)*page_length+2).toString()+")'>"+i+"</p>" // This adds a page number to the pagination. 
+      if((i)*page_length+2>=row_count){ // This checks if the current page is the last page.
+        break // This breaks the loop if the current page is the last page.
+      }
+    }
+    paginateTable(2) // This paginates the table.
+  }
+function applyFilters(){ // This function is called when the user clicks the apply filters button.
+  num_filters = 0 // This resets the number of filters applied.
+  idx = 0;
+  for(filter of ["year","group1","group2","group3","group4","group5","group6","student-notes"]){
+    if(document.getElementById(filter+"-toggle").checked){ // Checks if the filter is selected.
+      checked[idx] = true // This sets the filter to be applied.
+      num_filters++ // This increments the number of filters applied.
+    }
+    else{ // Checks if the filter is not selected.
+      checked[idx] = false // This sets the filter to not be applied.
+    }
+    idx++ // This increments the index.
+  }
+  if(year_input.value != ""){ // Checks if the user has selected any year groups.
+    year_groups = JSON.parse(year_input.value).slice() // Gets the year groups selected by the user
+    for(idx = 0; idx<year_groups.length;idx++){ // Iterates through all of the year groups selected by the user
+      year_groups[idx] = year_groups[idx].value.split("Year ")[1] // Gets the year group number from the year group name
+    }
+  }
+  else{ // If no year groups are selected, the year groups array is set to an empty array.
+    year_groups = [] // If no year groups are selected, the year groups array is set to an empty array.
+  }
+  if(group1_input.value != ""){ // Checks if the user has selected any group1 filters.
+    group1s = JSON.parse(group1_input.value).slice() // Gets the group1 filters selected by the user
+    for(idx=0;idx<group1s.length;idx++){ // Iterates through all of the group1 filters selected by the user
+      group1s[idx] = group1s[idx].value // Gets the group1 from the group1 name
+    }
+  }
+  else{ // If no group1 filters are selected, the group1 filters array is set to an empty array.
+    group1s = [] // If no group1 filters are selected, the group1 filters array is set to an empty array.
+  }
+  if(group2_input.value != ""){ // Checks if the user has selected any group2 filters.
+    group2s = JSON.parse(group2_input.value).slice() // Gets the group2 filters selected by the user
+    for(idx=0;idx<group2s.length;idx++){ // Iterates through all of the group2 filters selected by the user
+      group2s[idx] = group2s[idx].value // Gets the group2 from the group2 name
+    }
+  }
+  else{ // If no group2 filters are selected, the group2 filters array is set to an empty array.
+    group2s = [] // If no group2 filters are selected, the group2 filters array is set to an empty array.
+  }
+  if(group3_input.value != ""){ // Checks if the user has selected any group3 filters.
+    group3s = JSON.parse(group3_input.value).slice() // Gets the group3 filters selected by the user
+    for(idx=0;idx<group3s.length;idx++){ // Iterates through all of the group3 filters selected by the user
+      group3s[idx] = group3s[idx].value // Gets the group3 from the group3 name
+    }
+  }
+  else{ // If no group3 filters are selected, the group3 filters array is set to an empty array.
+    group3s = [] // If no group3 filters are selected, the group3 filters array is set to an empty array.
+  }
+  if(group4_input.value != ""){ // Checks if the user has selected any group4 filters.
+    group4s = JSON.parse(group4_input.value).slice() // Gets the group4 filters selected by the user
+    for(idx=0;idx<group4s.length;idx++){ // Iterates through all of the group4 filters selected by the user
+      group4s[idx] = group4s[idx].value // Gets the group4 from the group4 name
+    }
+  }
+  else{ // If no group4 filters are selected, the group4 filters array is set to an empty array.
+    group4s = [] // If no group4 filters are selected, the group4 filters array is set to an empty array.
+  }
+  if(group5_input.value != ""){ // Checks if the user has selected any group5 filters.
+    group5s = JSON.parse(group5_input.value).slice() // Gets the group5 filters selected by the user
+    for(idx=0;idx<group5s.length;idx++){ // Iterates through all of the group5 filters selected by the user
+      group5s[idx] = group5s[idx].value // Gets the group5 from the group5 name
+    }
+  }
+  else{ // If no group5 filters are selected, the group5 filters array is set to an empty array.
+    group5s = [] // If no group5 filters are selected, the group5 filters array is set to an empty array.
+  }
+  if(group6_input.value != ""){ // Checks if the user has selected any group6 filters.
+    group6s = JSON.parse(group6_input.value).slice() // Gets the group6 filters selected by the user
+    for(idx=0;idx<group6s.length;idx++){ // Iterates through all of the group6 filters selected by the user
+      group6s[idx] = group6s[idx].value // Gets the group6 from the group6 name
+    }
+  }
+  else{ // If no group6 filters are selected, the group6 filters array is set to an empty array.
+    group6s = [] // If no group6 filters are selected, the group6 filters array is set to an empty array.
+  }
+  if(notes_filter_input.value != ""){ // Checks if the user has selected any notes filters.
+    notes_filter = JSON.parse(notes_filter_input.value).slice() // Gets the notes filters selected by the user
+    for(idx=0;idx<notes_filter.length;idx++){ // Iterates through all of the notes filters selected by the user
+      notes_filter[idx] = notes_filter[idx].value // Gets the note from the note name
+      notes_filter[idx] = notes_filter[idx].toLowerCase() // Converts the note to lowercase
+    }
+  }
+  else{ // If no notes filters are selected, the notes filters array is set to an empty array.
+    notes_filter = [] // If no notes filters are selected, the notes filters array is set to an empty array.
+  }
+  if(num_filters == 0){ // No filters applied
+    document.getElementById("number-filters").style.display = "none" // Hides the badge that shows the number of filters applied.
+  }
+  else{
+    document.getElementById("number-filters").style.display = "block" // Displays the badge that shows the number of filters applied.
+    document.getElementById("number-filters").innerHTML = num_filters.toString() // Sets the badge to show the number of filters applied.
+  }
+  flash("Filters applied","success","filter-messages","modal-filters") // This displays a success message.
+  document.getElementById("apply-filter").hidden = true // This hides the apply filters button.
+}
+function search(){ // This function is called when the user clicks the search button.
+  var input = document.getElementById("search").value.toLowerCase() // This gets the value of the search box and converts it to lowercase.
+  var students = document.getElementsByClassName("student") // This gets all the rows in the table.
+  not_hidden = 0 // This is the number of rows that are not hidden.
+  for(var i=0;i<students.length;i++){ // This loops through each row in the table.
+      student = students[i] // This gets the current row.
+      student_name = student.children[0].innerHTML.toLowerCase() // This gets the name of the student.
+      student_year = student.children[2].innerHTML.toLowerCase() // This gets the year group of the student.
+      student_notes = document.getElementById("view-notes-"+i.toString()).innerText // This gets the notes of the student.
+      if(student_name.includes(input)){ // This checks if the name of the student contains the search term.
+        cont = true // This is a boolean that is used to check if the student should be shown.
+        subjects = [student.children[3].innerHTML,student.children[4].innerHTML,student.children[5].innerHTML,student.children[6].innerHTML,student.children[7].innerHTML,student.children[8].innerHTML] // This gets the subjects selected by the student.
+        for(idx =0; idx<subjects.length; idx++){ // This loops through each subject selected by the student.
+          subjects[idx] = subjects[idx].split("") // This splits the subject into an array of characters.
+          subjects[idx].splice(-3,3) // This removes the last 3 characters from the subject.
+          subjects[idx] = subjects[idx].join("") // This joins the array of characters back into a string.
+        }
+        criterion1 = (group1s.indexOf(subjects[0]) == -1 || subjects[0] == "") // This checks if the subject selected by the student in group 1 is not in the group1 filters.
+        criterion2 = (group2s.indexOf(subjects[1]) == -1 || subjects[1] == "") // This checks if the subject selected by the student in group 2 is not in the group2 filters.
+        criterion3 = (group3s.indexOf(subjects[2]) == -1 || subjects[2] == "") // This checks if the subject selected by the student in group 3 is not in the group3 filters.
+        criterion4 = (group4s.indexOf(subjects[3]) == -1 || subjects[3] == "") // This checks if the subject selected by the student in group 4 is not in the group4 filters.
+        criterion5 = (group5s.indexOf(subjects[4]) == -1 || subjects[4] == "") // This checks if the subject selected by the student in group 5 is not in the group5 filters.
+        criterion6 = (group6s.indexOf(subjects[5]) == -1 || subjects[5] == "") // This checks if the subject selected by the student in group 6 is not in the group6 filters.
+        if(checked[0] && year_groups.indexOf(student_year) == -1){ // This checks if the year group of the student is not in the year groups filter.
+          student.hidden = true // Hides the row
+        }
+        else if(checked[1] && criterion1){ // This checks if the subject selected by the student in group 1 is not in the group1 filters and if the user wishes to filter by the subject selected by the student in group 1.
+          student.hidden = true // Hides the row
+        }
+        else if(checked[2] && criterion2){ // This checks if the subject selected by the student in group 2 is not in the group2 filters and if the user wishes to filter by the subject selected by the student in group 2.
+          student.hidden = true // Hides the row
+        }
+        else if(checked[3] && criterion3){ // This checks if the subject selected by the student in group 3 is not in the group3 filters and if the user wishes to filter by the subject selected by the student in group 3.
+          student.hidden = true // Hides the row
+        }
+        else if(checked[4] && criterion4){ // This checks if the subject selected by the student in group 4 is not in the group4 filters and if the user wishes to filter by the subject selected by the student in group 4.
+          student.hidden = true // Hides the row
+        }
+        else if(checked[5] && criterion5){ // This checks if the subject selected by the student in group 5 is not in the group5 filters and if the user wishes to filter by the subject selected by the student in group 5.
+          student.hidden = true // Hides the row
+        }
+        else if(checked[6] && criterion6){ // This checks if the subject selected by the student in group 6 is not in the group6 filters and if the user wishes to filter by the subject selected by the student in group 6.
+          student.hidden = true // Hides the row
+        }
+        else if(checked[7]){ // This checks if the user is filtering by notes
+          cont = true // This is a boolean that is used to check if the student should be shown.
+          for(var criterion of notes_filter){ // This loops through each criterion in the notes filter.
+            if(!student_notes.includes(criterion)){ // This checks if the notes of the student do not contain the search term.
+              cont = false // This sets cont to false if the notes of the student do not contain the search term.
+              break // This breaks the loop if the notes of the student do not contain the search term.
+            }
+          }
+          if(cont){ // This checks if the name of the student contains the search term.
+            student.hidden = false // This shows the row if the name of the student contains the search term.
+            not_hidden++ // This increments the number of rows that are not hidden.
+          }
+          else{ // This checks if the name of the student does not contain the search term.
+            student.hidden = true // This hides the row if the name of the student does not contain the search term.
+          }
+        }
+        else{ // The student matches all filters
+          student.hidden = false // This shows the row if the name of the student contains the search term.
+          not_hidden++ // This increments the number of rows that are not hidden.
+        }
+      }
+      else{ // This checks if the name of the student does not contain the search term.
+        student.hidden = true // This hides the row if the name of the student does not contain the search term.
+      }
+    }
+  if(not_hidden == 0){ // No students were found
+    document.getElementById("null-search-row").hidden = false // This displays the row that is displayed when no students are found.
+  }
+  else if(not_hidden == students.length){
+    document.getElementById("null-search-row").hidden = true // This hides the row that is displayed when no students are found.
+    document.getElementById("page-controls").hidden = false // This shows the pagination controls.
+    paginateTable(2) // This paginates the table.
+  }
+  else{ // Students were found
+    document.getElementById("null-search-row").hidden = true // This hides the row that is displayed when no students are found.
+  }
+  document.getElementById("page-controls").hidden = true // This hides the pagination controls.
+}
+function toggleColumn(column){ // This function is called when the user clicks on a column header to hide or show the column.
+  {%set idx = 0%} // This is keeps track of the index of the student
+  {%set counter = namespace(value=0)%} // This adjusts to keep track of the index of the student
+  {%for row in students%} // This loops through each student in the students list
+    {%set idx = counter.value%} // This sets the index of the student
+      if(document.getElementById(column+"-{{idx}}") && document.getElementById(column+"-{{idx}}").style.visibility == "hidden"){ // This checks if the column is hidden
+        document.getElementById(column+"-{{idx}}").style.visibility = "visible" // This makes the column visible
+        document.getElementById(column).className = "fa fa-eye" // This changes the icon to an eye
+      }
+      else if(document.getElementById(column+"-{{idx}}")){ // This checks if the column is visible
+        document.getElementById(column+"-{{idx}}").style.visibility = "hidden" // This makes the column hidden
+        document.getElementById(column).className = "fa fa-eye-slash" // This changes the icon to a crossed out eye
+      }
+  {%set counter.value = counter.value+1%} // This increments the index of the student
+  {%endfor%} // This ends the loop through each student in the students list
+}
+function sortColumn(column){ // This function is called when the user clicks on a column header to sort the table.
+  n = ["name","email","year","group1","group2","group3","group4","group5","group6","student-notes"].indexOf(column) // This gets the index of the column that is being sorted.
+  {%set idx = 0%} // This is keeps track of the index of the student
+  {%set counter = namespace(value=0)%} // This adjusts to keep track of the index of the student
+  dir = "" // This is the direction of the sort.
+  if(document.getElementById("sort-"+column).className == "fa fa-sort"){ // This checks if the column is not sorted.
+    dir = "asc" // This is the direction of the sort.
+  }
+  else if(document.getElementById("sort-"+column).className == "fa fa-sort-asc"){ // This checks if the column is already sorted in ascending order.
+    dir = "desc" // This is the direction of the sort.
+  }
+  else{ // We will set the arrow's appearance to the bidirectional arrow
+    dir = "" // This is the direction of the sort.
+  }
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0; // This is the logic for sorting the table.
+  table = document.getElementById("table"); // This gets the table.
+  switching = true; // This is a boolean that is used to check if a switch has been made.
+  while (switching) { // Make a loop that will continue until no switching has been done:
+    switching = false; // This is a boolean that is used to check if a switch has been made.
+    rows = table.rows; // This gets all the rows in the table.
+    for (i = 2; i < (rows.length - 1); i++) { // Loop through all table rows (except the first, which contains table headers):
+      shouldSwitch = false; // This is a boolean that is used to check if a switch has been made.
+      x = rows[i].getElementsByTagName("TD")[n]; // This gets the current row in the table.
+      y = rows[i + 1].getElementsByTagName("TD")[n]; // This gets the next row in the table.
+      if (dir == "asc") { // If the direction is ascending, the loop will run in normal order
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) { // Checks if the current row is greater than the next row
+          shouldSwitch = true; // If the current row is greater than the next row, the loop will break
+          break; // If the current row is greater than the next row, the loop will break
+        }
+      } else if (dir == "desc") { // If the direction is descending, the loop will run in reverse order
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) { // If the current row is greater than the next row, the loop will break
+          shouldSwitch = true; // If the current row is greater than the next row, the loop will break
+          break; // If the current row is greater than the next row, the loop will break
+        }
+      }
+    }
+    if (shouldSwitch) { // If a switch has been marked, make the switch and mark that a switch has been done!
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]); // If a switch has been marked, make the switch and mark that a switch has been done!
+      switching = true; // Run loop again because a switch has been done
+      switchcount++; // Each time a switch is done, increase this count by 1
+    }
+  }
+  if(column == "year"){ // This checks if the column is the year column
+    document.getElementById("sort-name").className = "fa fa-sort" // This resets the sort icon to the default sort icon
+  }
+  if(column == "name"){ // This checks if the column is the name column
+    document.getElementById("sort-year").className = "fa fa-sort" // This resets the sort icon to the default sort icon
+  }
+  if(dir != ""){ // This checks if the column is already sorted
+    document.getElementById("sort-"+column).className = "fa fa-sort-"+dir // This changes the sort icon to the ascending or descending sort icon
+  }
+  else{ // This resets the sort icon to the default sort icon
+    document.getElementById("sort-"+column).className = "fa fa-sort" // This resets the sort icon to the default sort icon
+    document.getElementById("students").replaceChildren() // This clears the table of all rows.
+    for(var row of og_rows){ // This loops through each row in the original rows of the table.
+      document.getElementById("students").appendChild(row) // This resets the table to the original order
+    }
+    if(column != "name" && document.getElementById(column).className == "fa fa-eye-slash"){ // This checks if the column is hidden
+      toggleColumn(column) // This is to ensure that the column is hidden if it was hidden before sorting
+      toggleColumn(column) // This is to ensure that the column is hidden if it was hidden before sorting
+    }
+  }
+}
+function exportTableToExcel(tableID='table', filename = 'IB Choices'){ // Exports table to excel
+  table = document.getElementById(tableID) // This gets the table.
+  dtable = table.cloneNode(true) // This clones the table so that the original table is not affected.
+  element = dtable.getElementsByTagName("tr")[1] // This gets the first row of the table.
+  element.parentNode.removeChild(element) // This removes the first row of the table.
+  dtable_head = table.getElementsByTagName("thead") // This gets the head of the table.
+  dtable_head = dtable_head[0] // This gets the head of the table.
+  icons = Array.from(dtable.getElementsByTagName("i")).slice() // This gets all the icons in the table.
+  for(i of icons){ // This loops through each icon in the table.
+    i.remove() // Removes all icons from the table
+  }
+  scripts = Array.from(dtable.getElementsByTagName("script")).slice() // This gets all the scripts in the table.
+  for(i of scripts){ // This loops through each script in the table.
+    i.remove() // Removes all icons from the table
+  }
+  for(var i = 0; i < dtable.rows.length; i++){ // This loops through each row in the table.
+    if(i>0){ // Skips first row as that has the column headers
+      dtable.rows[i].cells[dtable.rows[i].cells.length-1].innerHTML =  document.getElementById("view-notes-"+(i-1).toString()).innerHTML.split("<br>").join("<br style = 'mso-data-placement:same-cell;'>") // This adds the notes of the student.
+    }
+  }
+  tableToExcel(dtable,filename) // This calls the tableToExcel function to export the table to excel
+}
+function cancel_search(){ // This function is called when the user clicks the cancel search button.
+  for(var filter of ["year","group1","group2","group3","group4","group5","group6","student-notes"]){ // This loops through each filter.
+    document.getElementById(filter+"-filter-container").style.display = "none" // This hides the filter input box.
+    document.getElementById(filter+"-filter").value = "" // This clears the filter input box.
+    document.getElementById(filter+"-toggle").checked = false // This unchecks the filter toggle.
+  }
+  document.getElementById("number-filters").style.display = "none" // Hides the badge that shows the number of filters applied.
+  document.getElementById("search").value = "" // This clears the search box.
+  search() // This calls the search function to update the table.
+  paginateTable(2) // This paginates the table.
+  document.getElementById("page-controls").hidden = false // This shows the pagination controls.
+}
+function update_notes(idx,email){ // Updates notes for a user
+  fetch("/update-notes",{ // This is the fetch request to the server
+    method:"POST", // This is the method of the request
+    headers:{ // These are the headers of the request
+      "Content-Type":"application/json" // This sets the data type to json so it can be 
+    },
+    body:JSON.stringify({ // This sends the notes to the server.
+      "email":email, // This gets the email of the student.
+      "notes":document.getElementById("notes-text-"+idx).value // This gets the notes from the text area.
+    })
+  }).then(response => response.json()).then(data =>process_save_response(data,idx)) // This processes the response from the server.
+}
+function process_save_response(data,idx){ // This function is called when the response from the server is received.
+  if(data.success == "y"){ // Notes updated successfully.
+      document.getElementById('save-'+idx.toString()).style.display = 'none' // This hides the save button.
+    flash("Notes updated successfully","success","notes-messages-{{idx}}",document.getElementById("notes-modal-{{idx}}")) // This displays a success message.
+  }
+  else{ // Notes failed to update.
+      flash("Notes failed to update","error","notes-messages-{{idx}}",document.getElementById("notes-modal-{{idx}}")) // This displays an error message.
+  }
+}
+function toggleNotesMode(idx){ // This function is called when the user clicks on the notes icon.
+  if(document.getElementById("notes-text-"+idx).style.display == "none"){ // This checks if the notes text area is hidden.
+    document.getElementById("notes-text-"+idx).style.display = "block" // This displays the notes text area.
+    document.getElementById("view-notes-"+idx).style.display = "none" // This hides the notes text area.
+    document.getElementById("notes-icon-"+idx).className = "fa fa-eye" // This changes the icon to an eye
+  }
+  else{ // This checks if the notes text area is displayed.
+    document.getElementById("notes-text-"+idx).style.display = "none" // This hides the notes text area.
+    document.getElementById("view-notes-"+idx).style.display = "block" // This displays the notes text area.
+    document.getElementById("notes-icon-"+idx).className = "fa fa-pencil" // This changes the icon to a pencil
+  }
+}
+function displayNotes(idx){ // This function is called when the user types in the notes text area.
+  document.getElementById('view-notes-'+idx.toString()).innerText = document.getElementById('notes-text-'+idx.toString()).value // This updates the notes text area.
+  if(document.getElementById('notes-text-'+idx.toString()).value == ""){ // This checks if the notes text area is empty.
+    document.getElementById("view-notes-"+idx.toString()).value = "No notes have been added for this user" // This updates the notes text area.
+  }
+  document.getElementById('save-'+idx.toString()).style.display = 'block' // This displays the save button.
+}
+function toggleFilter(filter){ // This function is called when the user clicks on a filter.
+  if(document.getElementById(filter+"-toggle").checked){ // Checks if the filter is selected.
+    document.getElementById(filter+"-filter-container").style.display = "block" // Displays the filter input box.
+  }
+  else{ // Checks if the filter is not selected.
+    document.getElementById(filter+"-filter-container").style.display = "none" // Hides the filter input box.
+  }
+}
+  function paginateTable(start){ // This function is called when the user clicks on a page number.
+    var table = document.getElementById("table"); // This gets the table.
+    var rows = table.rows; // This gets all the rows in the table.
+    if(start == 2){ // This checks if the user wants to go to the first page.
+      document.getElementById("previous").style.display = "none"; // Hides the button to skip to the beginning as the user is on the first page.
+    }
+    else{ // This checks if the user wants to go to the first page.
+      document.getElementById("previous").style.display = "block"; // Shows the button to skip to the beginning
+    }
+    if(start == -1){ // This checks if the user wants to go to the last page.
+      start = rows.length-page_length // This is the index of the last row in the table.
+    }
+    for(i=1;i<=Math.floor((rows.length-2)/page_length);i++){ // This loops through each page number.
+      try{ // Checks if a page is found
+        document.getElementById("pages-"+i.toString()).className = "" // We remove the active class from all pages
+      }
+      catch{ // No page found
+        break // We have reached the last page
+      }
+    }
+    document.getElementById("pages-"+Math.floor((start-2)/page_length+1).toString()).className = "active" // Makes the current page number seem visible
+    last_idx = start // This is the index of the last row in the current page.
+    for(var i = 1; i < rows.length; i++){ // This loops through each row in the table.
+      if(i>=start+page_length || i < start){ // This checks if the row is not in the current page.
+        rows[i].hidden = true // This hides the row.
+      }
+      else{ // This checks if the row is in the current page.
+        rows[i].hidden = false // This shows the row.
+        last_idx = i*1 // This is the index of the last row in the current page.
+      }
+    }
+    if(last_idx == rows.length-1){ // This is the last page
+      document.getElementById("next").style.display = "none"; // Hides the button to skip to the end as the user is on the last page.
+    }
+    else{ // This is not the last page
+      document.getElementById("next").style.display = "block"; // Shows the button to skip to the end
+    }
+  }
+</script>
+{%endblock%}
