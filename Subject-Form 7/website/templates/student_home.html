@@ -1,0 +1,273 @@
+{%extends 'base.html'%}
+{%block title%}Home{%endblock%}
+{%block content%}
+<style>
+  .modal {
+    display: none;
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+  }
+  .modal-content {
+    background-color: #fefefe;
+    margin: 5px auto;
+    border: 1px solid #888;
+    width: 80%; 
+  }
+  .close {
+    position: absolute;
+    right: 25px;
+    top: 0;
+    color: #000;
+    font-size: 35px;
+    font-weight: bold;
+  }
+  .close:hover,
+  .close:focus {
+    color: red;
+    cursor: pointer;
+  }
+  .animate {
+    -webkit-animation: animatezoom 0.6s;
+    animation: animatezoom 0.6s
+  }
+  @-webkit-keyframes animatezoom {
+    from {-webkit-transform: scale(0)}
+    to {-webkit-transform: scale(1)}
+  }
+  @keyframes animatezoom {
+    from {transform: scale(0)}
+    to {transform: scale(1)}
+  }
+</style>
+{%if igcse_drafts != [] or ib_drafts != []%}
+  {%if igcse_drafts != []%}
+  <h3>Your IGCSE Drafts</h3>
+  {%for draft in igcse_drafts%}
+  <div class="modal" id = "modal-{{draft.name}}" style = "display:none">
+    <div class="modal-content animate" id = "modal-{{draft.name}}-container">
+      <div class="modal-header">
+        <h4 class="modal-title" id = "modal-title-{{draft.name}}">{{draft.name}}</h4>
+        <span onclick= "document.getElementById('modal-{{draft.name}}').style.display='none'" class="close" title="Close Modal" id = "close-modal-{{draft.name}}">&times;</span>
+      </div>
+      <div class="modal-body" id = "{{draft.name}}-body">
+        <div id = "{{draft.name}}-messages"></div>
+        {%if "N/A" in [draft.english_level,draft.lote,draft.lote_level,draft.math_level,draft.science_level,draft.elective1,draft.elective2,draft.elective3]%}
+        <p><i class = "fa fa-warning" style = "color:#eedd11" id = "warning-{{draft.name}}"></i> Some of your subject choices are now unavailable due to changes in subject blocks</p>
+        {%else%}
+        <i id = "warning-{{draft.name}}" hidden = "true"></i>
+        {%endif%}
+        <h5>Subject Choices</h5>
+        <ul>
+          <li>{%if draft.lote == "Chinese"%}{{draft.lote_level}}{%else%}{{draft.lote}}{%endif%}</li>
+          <li>{{draft.elective1}}</li>
+          <li>{{draft.elective2}}</li>
+          <li>{{draft.elective3}}</li>
+          <li>Reserve Choice: {{draft.reserve_choice}}</li>
+        </ul>
+        {%if not deadline%}
+        <button onclick = "location.href = '/edit-draft/{{draft.id}}'" class = "btn btn-primary" style = "background-color:black;border:none"><i class = "fa fa-pencil" style = "color:white"></i></button>
+        {%endif%}
+        <br />
+      </div>
+    </div>
+  </div>
+  <div id = "card-{{draft.name}}">
+    <div class = "card" >
+      <div class = "card-body">
+        <h5 class = "card-title" ><div id = "card-title-{{draft.name}}">{{draft.name}} {%if not deadline%}<i class = "fa fa-pencil" onclick = "editName('{{draft.name}}',window.prompt('Enter the new name for this draft','{{draft.name}}'))"></i> <i class = "fa fa-trash" id = "delete-{{draft.name}}" onclick = "deleteDraft('{{draft.name}}')"></i>{%endif%}</div></h5>
+        <button onclick = "document.getElementById('modal-{{draft.name}}').style.display = 'block'" class = "btn btn-primary" style = "background-color:black;border:none" id = "view-modal-{{draft.name}}">View Choices</button>
+        <br />
+        <input type = "radio" onclick = "selectDraft('{{draft.id}}')" name = "{{draft.course}}" id = "radio-{{draft.id}}" {%if draft.selected%}checked{%endif%} {%if deadline%}disabled{%endif%}/>
+        <label for = "draft" id = "label-{{draft.id}}">Select as Main Draft</label>
+      </div>
+    </div>
+    <br />
+  </div>
+{%endfor%}
+{%endif%}
+{%if ib_drafts != []%}
+<h3>Your IB Drafts</h3>
+  {%for draft in ib_drafts%}
+  <div class="modal" id = "modal-{{draft.name}}" style = "display:none">
+    <div class="modal-content animate" id = "modal-{{draft.name}}-container">
+      <div class="modal-header">
+        <h4 class="modal-title" id = "modal-title-{{draft.name}}">{{draft.name}}</h4>
+        <span onclick= "document.getElementById('modal-{{draft.name}}').style.display='none'" class="close" title="Close Modal" id = "close-modal-{{draft.name}}">&times;</span>
+      </div>
+      <div class="modal-body" id = "{{draft.name}}-body">
+        <div id = "{{draft.name}}-messages"></div>
+        {%if "N/A" in [draft.english_level,draft.lote,draft.lote_level,draft.math_level,draft.science_level,draft.elective1,draft.elective2,draft.elective3]%}
+        <p><i class = "fa fa-warning" style = "color:#eedd11" id = "warning-{{draft.name}}"></i> Some of your subject choices are now unavailable due to changes in subject blocks</p>
+        {%else%}
+        <i id = "warning-{{draft.name}}" hidden = "true"></i>
+        {%endif%}
+        <h5>IB Subjects</h5>
+        <ul>
+          <li>{{draft.group1}}</li>
+          <li>{{draft.group2}}</li>
+          <li>{{draft.group3}}</li>
+          <li>{{draft.group4}}</li>
+          <li>{%if draft.group5 != "IB Courses"%}Mathematics {%endif%}{{draft.group5}}</li>
+          <li>{{draft.group6}}</li>
+        </ul>
+        {%if not deadline%}
+        <button onclick = "location.href = '/edit-draft/{{draft.id}}'" class = "btn btn-primary" style = "background-color:black;border:none"><i class = "fa fa-pencil" style = "color:white"></i></button>
+        {%endif%}
+        <br />
+      </div>
+    </div>
+  </div>
+  <div id = "card-{{draft.name}}">
+    <div class = "card" >
+      <div class = "card-body">
+        <h5 class = "card-title" ><div id = "card-title-{{draft.name}}">{{draft.name}} {%if not deadline%}<i class = "fa fa-pencil" onclick = "editName('{{draft.name}}',window.prompt('Enter the new name for this draft','{{draft.name}}'))"></i> <i class = "fa fa-trash" id = "delete-{{draft.name}}" onclick = "deleteDraft('{{draft.name}}')"></i>{%endif%}</div></h5>
+        <button onclick = "document.getElementById('modal-{{draft.name}}').style.display = 'block'" class = "btn btn-primary" style = "background-color:black;border:none" id = "view-modal-{{draft.name}}">View Choices</button>
+        <br />
+        <input type = "radio" onclick = "selectDraft('{{draft.id}}')" name = "{{draft.course}}" id = "radio-{{draft.id}}" {%if draft.selected%}checked{%endif%} {%if deadline%}disabled{%endif%}/>
+        <label for = "draft" id = "label-{{draft.id}}">Select as Main Draft</label>
+      </div>
+    </div>
+    <br />
+  </div>
+{%endfor%}
+{%endif%}
+<button onclick = "selectOptions()" class = "btn btn-primary" style = "background-color:black;border:none">Add New Draft</button>
+{%else%}
+<br />
+<button onclick = "selectOptions()" class = "btn btn-primary" style = "background-color:black;border:none">Add First Draft</button>
+{%endif%}
+<script>
+  function selectOptions(){ // This function is called when the user clicks the "Select Options" button
+    location.href = "/options" // This redirects the user to the "Select Options" page
+  }
+  function editName(old_name,new_name){ // This function is called when the user clicks the "Edit Name" button
+    if(new_name == null){ // This checks if the user clicked cancel
+      return false // This stops the function from running
+    }
+    fetch("/edit-draft-name",{ // This is the fetch request to the server
+      method:"POST", // This is the method of the request
+      headers:{ // This is the headers of the request
+        "Content-Type":"application/json" // This is the content type of the request
+      },
+      body:JSON.stringify({ // This is the body of the request
+        "old_name":old_name, // This is the old name of the draft
+        "new_name":new_name // This is the new name of the draft
+      })
+    }).then(response => response.json()).then(data =>process_edit_response(data,old_name,new_name)) // Processes the response
+  }
+  function process_edit_response(data,old_name,new_name){ // This function is called when the response from the server is received
+    if(data.success == "y"){ // This checks if the draft name was edited successfully
+      flash("Draft name edited successfully","success") // This is the success message that is displayed if the draft name was edited successfully
+      document.getElementById("modal-"+old_name+"-container").id = "modal-"+new_name+"-container" // This changes the id of the modal container
+      document.getElementById(old_name+"-body").id = new_name+"-body" // This changes the id of the modal body
+      document.getElementById(old_name+"-messages").id = new_name+"-messages" // This changes the id of the modal messages
+      document.getElementById("card-title-"+old_name).innerHTML = new_name // This changes the name of the draft in the card title
+      document.getElementById("card-title-"+old_name).innerHTML+=' <i class = "fa fa-pencil" onclick = "editName(\''+new_name+'\',window.prompt(\'Enter the new name for this draft\','+"'"+new_name+"'"+'))'+'"></i>' // This adds the edit name button to the card title
+      document.getElementById("card-title-"+old_name).innerHTML += ' <i class = "fa fa-trash" id = "delete-'+new_name+'" onclick = "deleteDraft(\''+new_name+'\')"></i>' // This adds the delete draft button to the card title
+      document.getElementById("card-title-"+old_name).id = "card-title-"+new_name // This changes the id of the card title
+      document.getElementById("modal-title-"+old_name).innerHTML = new_name // This changes the name of the draft in the modal title
+      document.getElementById("modal-title-"+old_name).id = "modal-title-"+new_name // This changes the id of the modal title
+      document.getElementById("view-modal-"+old_name).onclick = function (){document.getElementById('modal-'+new_name).style.display = 'block'} // This changes the onclick function of the view modal button
+      document.getElementById("card-"+old_name).id = "card-"+new_name // This changes the id of the card
+      document.getElementById("close-modal-"+old_name).onclick = function (){document.getElementById('modal-'+new_name).style.display='none'} // This changes the onclick function of the close modal button
+      document.getElementById("close-modal-"+old_name).id = "close-modal-"+new_name // This changes the id of the close modal button
+      document.getElementById("view-modal-"+old_name).id = "view-modal-"+new_name // This changes the id of the view modal button
+      document.getElementById("warning-"+old_name).id = "warning-"+new_name // This changes the id of the warning icon
+      document.getElementById("modal-"+old_name).id = "modal-"+new_name // This changes the id of the modal
+    }
+    else if(data.success == "special_characters"){ // This checks if the draft name contains special characters
+      flash("Your draft name cannot contain the following special characters:\n/-_@?![]=$&:;,","error")
+    }
+    else if(data.success == "exists"){ // This checks if the draft name already exists
+      flash("Draft name already taken","error") // This is the error message that is displayed if the draft name already exists
+    }
+    else if(data.success == "deadline"){ // This checks if the deadline has passed
+        flash("The deadline for selecting your options has passed. Please contact Dr Heather if you wish to change your subject choices",category="warning") // This is the error message that is displayed if the deadline has passed
+    }
+    else{ // The draft name failed to edit
+      flash("Failed to edit draft name","error") // This is the error message that is displayed if the draft name failed to edit
+    }
+  }
+  function deleteDraft(name){ // This function is called when the user clicks the "Delete Draft" button
+    if(confirm("Are you sure you want to delete this draft?")){ // This confirms if the user wants to delete the draft
+      fetch("/delete-draft",{ // This is the fetch request to the server
+        method:"POST", // This is the method of the request
+        headers:{ // This is the headers of the request
+          "Content-Type":"application/json" // This is the content type of the request
+        },
+        body:JSON.stringify({ // This is the body of the request
+          "name":name // This is the name of the draft that the user wants to delete
+        })
+      }).then(response => response.json()).then(data =>process_delete_response(data,name)) // This function is called when the response from the server is received
+    }
+  }
+  function process_delete_response(data,name){ // This function is called when the response from the server is received
+    if(data.success == "y"){ // Checks if the draft was deleted successfully
+      flash("Draft deleted successfully","success") // This is the success message that is displayed if the draft was deleted successfully
+      document.getElementById("modal-"+name).hidden = true // This hides the modal for the deleted draft
+      document.getElementById("card-"+name).hidden = true // This hides the card for the deleted draft
+      cont = false // This is used to check if there are any more drafts
+      {%for draft in igcse_drafts%} // This loops through all the drafts
+      if(!document.getElementById("card-{{draft.name}}").hidden){ // This checks if there are any drafts that are not hidden
+        cont = true // This sets cont to true if there are any drafts that are not hidden
+      }
+      {%endfor%} // This ends the loop through all the drafts
+      if(!cont){ // This checks if there are no more drafts
+        location.reload() // This reloads the page if there are no more drafts
+      }
+      cont = false // This is used to check if there are any more drafts
+      {%for draft in ib_drafts%} // This loops through all the drafts
+      if(!document.getElementById("card-{{draft.name}}").hidden){ // This checks if there are any drafts that are not hidden
+        cont = true // This sets cont to true if there are any drafts that are not hidden
+      }
+      {%endfor%} // This ends the loop through all the drafts
+      if(!cont){ // This checks if there are no more drafts
+        location.reload() // This reloads the page if there are no more drafts
+      }
+    }
+    else if(data.success == "deadline"){ // This checks if the deadline has passed
+        flash("The deadline for selecting your options has passed. Please contact Dr Heather if you wish to change your subject choices",category="warning") // This is the error message that is displayed if the deadline has passed
+    }
+    else{ // The draft failed to delete
+      flash("Failed to delete draft","error") // This is the error message that is displayed if the draft failed to delete
+    }
+  }
+  function selectDraft(id){ // This function is called when the user clicks the "Select Draft" button
+    fetch("/select-draft",{ // This is the fetch request to the server
+      method:"POST", // This is the method of the request
+      headers:{ // This is the headers of the request
+        "Content-Type":"application/json" // This is the content type of the request
+      },
+      body:JSON.stringify({ // This is the body of the request
+        "id":id // This is the id of the draft that the user wants to select
+      })
+    }).then(response=>response.json()).then(data=>process_select_response(data,id)) // This function is called when the response from the server is received
+  }
+  function process_select_response(data,id){ // This function is called when the response from the server is received
+    if(data.success == "y"){ // This checks if the draft was selected successfully
+      flash("Draft selected successfully","success") // This is the success message that is displayed if the draft was selected successfully
+      document.getElementById("radio-"+id).checked = true // This checks the radio button for the selected draft
+    }
+    else if(data.success == "deadline"){ // This checks if the deadline has passed
+      flash("The deadline for selecting your options has passed. Please contact Dr Heather if you wish to change your subject choices",category="warning") // This is the error message that is displayed if the deadline has passed
+      document.getElementById("radio-"+id).checked = false
+    }
+    else{ // The draft was not selected successfully
+      flash("Failed to select draft","error") // This is the error message that is displayed if the draft failed to select
+      document.getElementById("radio-"+id).checked = false
+    }
+  }
+function info(){ // This function is called when the user clicks the "View Subject Information" button
+  location.href = "/subject-info" // This redirects the user to the subject information page
+}
+</script>
+<button onclick = "info()" class = "btn btn-primary" style = "background-color:black;border:none">View Subject Information</button>
+{%endblock%}

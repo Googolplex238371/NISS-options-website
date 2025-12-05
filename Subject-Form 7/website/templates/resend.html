@@ -1,0 +1,14 @@
+{%extends 'base.html'%}
+{%block title%}Resend OTP{%endblock%}
+{%block content%}
+{%if user.is_authenticated%}
+<script>
+  location.href = "/"
+</script>
+{%endif%}
+<h3>Resend OTP</h3>  
+<form method = "POST">
+  <input class = "form-control" id = "email" name = "email" placeholder = "Enter your email" required />
+  <button type = "submit" class = "btn btn-primary" style = "background-color:black;border:none" onclick = >Resend</button>
+</form>
+{%endblock%}

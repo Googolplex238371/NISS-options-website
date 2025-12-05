@@ -1,0 +1,8 @@
+{%extends 'base.html'%}
+{%block title%}Select Options{%endblock%}
+{%block content%}
+<h2>Select the curriculum for which you would like to select your subject choices</h2>
+<input type = "radio" name = "course" value = "IGCSE" id = "IGCSE" required = "true" onclick = "location.href = '/select-options/igcse'"/>      <label for = "IGCSE">IGCSE</label>
+<br />
+<input type = "radio" name = "course" value = "IB" id = "IB" required = "true" onclick = "location.href = '/select-options/ib'"/>      <label for = "IB">IB</label>
+{%endblock%}

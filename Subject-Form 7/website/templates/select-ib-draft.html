@@ -1,0 +1,21 @@
+{%extends 'base.html'%}
+{%block title%}Select Draft{%endblock%}
+{%block content%}
+{%if drafts != []%}
+  <h3>Select the draft for your IB choices whose subjects you wish to edit</h3>
+  <div class = "row">
+  {%for draft in drafts%}
+      <div class = "card col-3" style = "margin:5px">
+        <div class = "card-body">
+          <a href = '/edit-draft/{{draft.id | safe}}' style = "color:black;"><h5>{{draft.name}}</h5></a>
+        </div>
+      </div>
+      <br />
+  {%endfor%}
+  </div>
+{%else%}
+<script>
+  location.href = "/options/ib" // Redirects to the IB options page
+</script>
+{%endif%}
+{%endblock%}

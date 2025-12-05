@@ -1,0 +1,339 @@
+{%extends 'base.html'%}
+{%block title%}Subjects{%endblock%}
+{%block content%}
+<h1>Subjects</h1>
+<style>
+  .animate {
+    -webkit-animation: animatezoom 0.6s;
+    animation: animatezoom 0.6s
+  }
+  @-webkit-keyframes animatezoom {
+    from {-webkit-transform: scale(0)}
+    to {-webkit-transform: scale(1)}
+  }
+  @keyframes animatezoom {
+    from {transform: scale(0)}
+    to {transform: scale(1)}
+  }
+  .subject-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  .subject-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  }
+
+  .subject-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .view-btn {
+    border: none;
+    background-color: black;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .view-btn:hover {
+    background-color: #333;
+    transform: scale(1.05);
+  }
+</style>
+<div id = "ib">
+  <h3>IB Subjects</h3>
+  <div class = "row">
+    <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+      <div class="card-body text-center">
+        <h3 class="card-title">English A</h3>
+        <p class="card-text text-muted">Study English Language And Literature</p>
+        <button 
+          onclick="location.href = 'https://drive.google.com/file/d/1eSFJeZ62U74T82HaTaJxNelKVfuPH2Ke/view'" 
+          class="btn btn-dark view-btn"
+        >
+          <i class="fa fa-info-circle"></i> SL
+        </button>
+        <button 
+          onclick="location.href = 'https://drive.google.com/file/d/184a9DbsNPq4Gk0F4v91xBV1wiIZM8iu0/view'" 
+          class="btn btn-dark view-btn"
+        >
+          <i class="fa fa-info-circle"></i> HL
+        </button>
+      </div>
+    </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+      <div class="card-body text-center">
+        <h3 class="card-title">Chinese A</h3>
+        <p class="card-text text-muted">Study Chinese Language And Literature</p>
+        <button 
+          onclick="location.href = 'https://drive.google.com/file/d/13GmaX2E7w79spCikJmytA5-Cs7BaQVsh/view'" 
+          class="btn btn-dark view-btn"
+        >
+          <i class="fa fa-info-circle"></i> SL & HL
+        </button>
+      </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+      <div class="card-body text-center">
+        <h3 class="card-title">School Support Self Taught (SSST) Language</h3>
+        <p class="card-text text-muted">Study Language And Literature in a language other than English or Chinese. Available at SL only.</p>
+        <button 
+          onclick="location.href = 'https://drive.google.com/file/d/1s6pAbxMsJySPo-EOyyudMnpvLTOI8vF8/view'" 
+          class="btn btn-dark view-btn"
+        >
+          <i class="fa fa-info-circle"></i> SL
+        </button>
+      </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+      <div class="card-body text-center">
+        <h3 class="card-title">Chinese Ab Initio</h3>
+        <p class="card-text text-muted">Study Chinese Ab Initio to build foundational Mandarin language skills. Available at SL only.</p>
+        <button 
+          onclick="location.href = 'https://drive.google.com/file/d/1v06LiKx3ce2W9_8-bPkPl3mMxuqaTiCt/view'" 
+          class="btn btn-dark view-btn"
+        >
+          <i class="fa fa-info-circle"></i> SL
+        </button>
+      </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+      <div class="card-body text-center">
+        <h3 class="card-title">Chinese B</h3>
+        <p class="card-text text-muted">Study Chinese B to advance your existing Mandarin language skills.</p>
+        <button 
+          onclick="location.href = 'https://drive.google.com/file/d/1qO8QlsXNImO8xWfjcBBQA7CZUr9jywjr/view'" 
+          class="btn btn-dark view-btn"
+        >
+          <i class="fa fa-info-circle"></i> SL & HL
+        </button>
+      </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+      <div class="card-body text-center">
+        <h3 class="card-title">English B</h3>
+        <p class="card-text text-muted">Study English B to advance your existing English language skills.</p>
+        <button 
+          onclick="location.href = 'https://drive.google.com/file/d/1ty4auziPKvAOiDY4Ii23YWjDw7dH80__/view'" 
+          class="btn btn-dark view-btn"
+        >
+          <i class="fa fa-info-circle"></i> SL & HL
+        </button>
+      </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+      <div class="card-body text-center">
+        <h3 class="card-title">French Ab Initio</h3>
+        <p class="card-text text-muted">Study French Ab Initio to build foundational French language skills. Available at SL only.</p>
+        <button 
+          onclick="location.href = 'https://drive.google.com/file/d/1t1pju6cHKDvMFFS2GcriGr8XpR6sHobR/view'" 
+          class="btn btn-dark view-btn"
+        >
+          <i class="fa fa-info-circle"></i> SL
+        </button>
+      </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+      <div class="card-body text-center">
+        <h3 class="card-title">French B</h3>
+        <p class="card-text text-muted">Study French B to advance your existing French language skills. </p>
+        <button 
+          onclick="location.href = 'https://drive.google.com/file/d/1pTMapXyrFmAhT8B32spSqphzANXXKC4h/view'" 
+          class="btn btn-dark view-btn"
+        >
+          <i class="fa fa-info-circle"></i> SL & HL
+        </button>
+      </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+      <div class="card-body text-center">
+        <h3 class="card-title">Spanish Ab Initio</h3>
+        <p class="card-text text-muted">Study Spanish Ab Initio to build foundational language skills. Available at SL only.</p>
+        <button 
+          onclick="location.href = 'https://drive.google.com/file/d/1t1pju6cHKDvMFFS2GcriGr8XpR6sHobR/view'" 
+          class="btn btn-dark view-btn"
+        >
+          <i class="fa fa-info-circle"></i> SL
+        </button>
+      </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+      <div class="card-body text-center">
+        <h3 class="card-title">Spanish B</h3>
+        <p class="card-text text-muted">Study Spanish B to advance your existing Spanish language skills. </p>
+        <button 
+          onclick="location.href = 'https://drive.google.com/file/d/1pTMapXyrFmAhT8B32spSqphzANXXKC4h/view'" 
+          class="btn btn-dark view-btn"
+        >
+          <i class="fa fa-info-circle"></i> SL & HL
+        </button>
+      </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+      <div class="card-body text-center">
+        <h3 class="card-title">Geography</h3>
+        <p class="card-text text-muted">Study Geography to understand the world around you.</p>
+        <button 
+          onclick="location.href = 'https://drive.google.com/file/d/1bDdRIrDqN7RI8RoQWhX5paJlGqapkgI8/view'" 
+          class="btn btn-dark view-btn"
+        >
+          <i class="fa fa-info-circle"></i> SL & HL
+        </button>
+      </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+      <div class="card-body text-center">
+        <h3 class="card-title">History</h3>
+        <p class="card-text text-muted">Study History to understand the significance of past events.</p>
+        <button 
+          onclick="location.href = 'https://drive.google.com/file/d/1TLATCkGCH8EZ9E4UJkC5KkaKI9BrwGph/view'" 
+          class="btn btn-dark view-btn"
+        >
+          <i class="fa fa-info-circle"></i> SL & HL
+        </button>
+      </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+    <div class = "card-body text-center">
+      <h3 class="card-title">Business Management</h3>
+      <p class="card-text text-muted">Study Business Management to understand the business world.</p>
+      <button onclick="location.href = 'https://drive.google.com/file/d/1Kvuvf6r3X_Pu8guikopNgTVViXN61T5Q/view'" class="btn btn-dark view-btn">
+        <i class="fa fa-info-circle"></i> SL & HL
+      </button>
+    </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+    <div class = "card-body text-center">
+      <h3 class="card-title">Economics</h3>
+      <p class="card-text text-muted">Study Economics to understand markets and the principles behind economic decisions.</p>
+      <button onclick="location.href = 'https://drive.google.com/file/d/1Zi9coyQTCLQBy0aJxjvHUbe6lx7waboW/view'" class="btn btn-dark view-btn">
+        <i class="fa fa-info-circle"></i> SL & HL
+      </button>
+    </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+    <div class = "card-body text-center">
+      <h3 class="card-title">Psychology</h3>
+      <p class="card-text text-muted">Study Psychology to understand the human mind and behaviour.</p>
+      <button onclick="location.href = 'https://drive.google.com/file/d/1G9IwSlThnQZ94Xx2mKcWCYl06TP-KAf-/view'" class="btn btn-dark view-btn">
+        <i class="fa fa-info-circle"></i> SL & HL
+      </button>
+    </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+    <div class = "card-body text-center">
+      <h3 class="card-title">Biology</h3>
+      <p class="card-text text-muted">Study Biology to understand living organisms and their interactions.</p>
+      <button onclick="location.href = 'https://drive.google.com/file/d/1ABdFETMZOHgwysfxm9UQv8j2DSTPwJib/view'" class="btn btn-dark view-btn">
+        <i class="fa fa-info-circle"></i> SL & HL
+      </button>
+    </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+    <div class = "card-body text-center">
+      <h3 class="card-title">Chemistry</h3>
+      <p class="card-text text-muted">Study Chemistry to understand the composition and properties of matter.</p>
+      <button onclick="location.href = 'https://drive.google.com/file/d/1WS0vryMyBYKOsogNt9NTT2eEQI9Queho/view'" class="btn btn-dark view-btn">
+        <i class="fa fa-info-circle"></i> SL & HL
+      </button>
+    </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+    <div class = "card-body text-center">
+      <h3 class="card-title">Physics</h3>
+      <p class="card-text text-muted">Study Physics to understand the fundamental principles of the universe.</p>
+      <button onclick="location.href = 'https://drive.google.com/file/d/1aCACZ_ME0MOtIJlQ1N7AaAHTm1GvK3nC/view'" class="btn btn-dark view-btn">
+        <i class="fa fa-info-circle"></i> SL & HL
+      </button>
+    </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+    <div class = "card-body text-center">
+      <h3 class="card-title">Environmental Systems and Societies (ESS)</h3>
+      <p class="card-text text-muted">Study ESS to understand the interactions between humans and the environment.</p>
+      <button onclick="location.href = 'https://drive.google.com/file/d/1bYWeA0u1YQxWWSY3KDX3WUPEHzdQ1OTf/view'" class="btn btn-dark view-btn">
+        <i class="fa fa-info-circle"></i> SL & HL
+      </button>
+    </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+    <div class = "card-body text-center">
+      <h3 class="card-title">Sports Science</h3>
+      <p class="card-text text-muted">Study Sports Science to understand the science behind the human body in the context of physical activity.</p>
+      <button onclick="location.href = 'https://drive.google.com/file/d/1b5FRkAG7oP8P2wc4EmKrr4g92BGcZdYA/view'" class="btn btn-dark view-btn">
+        <i class="fa fa-info-circle"></i> SL & HL
+      </button>
+    </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+    <div class = "card-body text-center">
+      <h3 class="card-title">Computer Science</h3>
+      <p class="card-text text-muted">Study Computer Science to understand the principles of computer systems and their applications.</p>
+      <button onclick="location.href = 'https://drive.google.com/file/d/1xx_ExneRbSDzgCyHqA7yxWs9Jw8OfZne/view'" class="btn btn-dark view-btn">
+        <i class="fa fa-info-circle"></i> SL & HL
+      </button>
+    </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+    <div class = "card-body text-center">
+      <h3 class="card-title">Mathematics Analysis and Approaches</h3>
+      <p class="card-text text-muted">Study Mathematics AA to develop a strong understanding of mathematical principles and techniques</p>
+      <button onclick="location.href = 'https://drive.google.com/file/d/1l8NPCIBnTh0dUbrHP7Ch-PAngcvUsQsm/view'" class="btn btn-dark view-btn">
+        <i class="fa fa-info-circle"></i> SL & HL
+      </button>
+    </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+    <div class = "card-body text-center">
+      <h3 class="card-title">Mathematics Applications and Interpretation</h3>
+      <p class="card-text text-muted">Study Mathematics AI to develop a strong understanding of mathematical principles and techniques. Available at SL only</p>
+      <button onclick="location.href = 'https://drive.google.com/file/d/1Ucuew781-jH4uvg57kaGobJe3zK6qpGC/view'" class="btn btn-dark view-btn">
+        <i class="fa fa-info-circle"></i> SL
+      </button>
+    </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+    <div class = "card-body text-center">
+      <h3 class="card-title">Visual Arts</h3>
+      <p class="card-text text-muted">Study Visual Arts to develop your creativity and artistic skills.</p>
+      <button onclick="location.href = 'https://drive.google.com/file/d/1KMPyKoadbNthsf53vWGrWm12QXY4NRkP/view'" class="btn btn-dark view-btn">
+        <i class="fa fa-info-circle"></i> SL & HL
+      </button>
+    </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+    <div class = "card-body text-center">
+      <h3 class="card-title">Theatre</h3>
+      <p class="card-text text-muted">Study Theatre to develop your creativity and performance skills.</p>
+      <button onclick="location.href = 'https://drive.google.com/file/d/1Wpp2PE5T9MH8yyGXtUIAY3znwXbPYPL9/view'" class="btn btn-dark view-btn">
+        <i class="fa fa-info-circle"></i> SL & HL
+      </button>
+    </div>
+  </div>
+  <div class="card subject-card animate-on-scroll col-6 col-s-4 col-md-4 col-lg-4 col-xl-4" style = "margin-bottom:16px;margin-right:5px;">
+    <div class = "card-body text-center">
+      <h3 class="card-title">Music</h3>
+      <p class="card-text text-muted">Study Music to develop your creativity and musical skills.</p>
+      <button onclick="location.href = 'https://drive.google.com/file/d/1DT1aj2NGcSuaMiSJz40pdhDE93axcJHs/view'" class="btn btn-dark view-btn">
+        <i class="fa fa-info-circle"></i> SL & HL
+      </button>
+    </div>
+  </div>
+</div>
+<script>
+    const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  });
+  document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+</script>
+{%endblock%}
